@@ -4,14 +4,6 @@ This repository contains interview prep materials and detailed coding problem wr
 
 Canonical consolidated index for coding problems:
 
-- `answers/coding_questions.md` — single source-of-truth: one-line summaries, short solutions, complexity notes, and links to the detailed `answers/*.md` write-ups.
-
-Notes
-- `answers/` contains the individual detailed write-ups and implementations.
-- `L2_Technical_Interview_Guide_CLEAN.md` is deprecated and can be removed. If you want to delete it from the repository, run the `git rm` command below.
-
-To remove the deprecated cleaned guide (locally) and commit the update:
-
 ```bash
 # remove deprecated file and commit
 git add README.md
@@ -19,11 +11,7 @@ git rm L2_Technical_Interview_Guide_CLEAN.md
 git commit -m "chore(docs): add root README pointing to canonical coding index and remove deprecated CLEAN guide"
 ```
 
-If you prefer I perform the git removal and commit for you, confirm and I will run those commands locally in the repository.
-
 # guide_sections — L2 Technical Interview Guide (split topics)
-
-This folder contains focused topic files extracted from the larger L2 guide to make the content easier to read and maintain. Each file is intentionally concise — use the main index `L2_Technical_Interview_Guide.md` to navigate to specific topics.
 
 Files
 - `circuit_breaker.md` — Circuit breaker pattern, states, triggers, and fallbacks.
@@ -43,8 +31,3 @@ Files
 
 How to use
 - Open `L2_Technical_Interview_Guide.md` for the main index linking to these files.
-- Edit or add files in this folder for new topics; add a link to the main index if you want it listed.
-
-Want a single compiled guide?
-- I can concatenate these files into one markdown or produce a PDF — tell me your preferred order and I’ll generate it.
-
