@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="480" viewBox="0 0 1000 480">
+  <style>
+    .title { font: bold 18px/1.2 Arial, Helvetica, sans-serif; }
+    .label { font: 13px/1.2 Arial, Helvetica, sans-serif; }
+    .small { font: 11px/1.1 Arial, Helvetica, sans-serif; fill: #333; }
+    .box { fill: #ffffff; stroke: #2b6cb0; stroke-width: 2; rx:8; }
+    .sub { fill: #f7fafc; stroke: #94a3b8; stroke-width: 1.2; rx:6; }
+    .arrow { stroke: #333; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="20" y="28" class="title">Partitioning vs Sharding vs Clustering — conceptual diagram</text>
+
+  <!-- Partitioning (left) -->
+  <g transform="translate(20,40)">
+    <rect class="box" x="0" y="0" width="290" height="380" />
+    <text x="18" y="26" class="label">Partitioning (single DB instance)</text>
+
+    <!-- big DB box icon -->
+    <rect x="18" y="44" width="254" height="80" class="sub" />
+    <text x="30" y="66" class="small">Table: events</text>
+    <text x="30" y="82" class="small">Partitioned BY RANGE (event_time)</text>
+
+    <!-- partitions slices -->
+    <g transform="translate(18,140)">
+      <rect x="0" y="0" width="78" height="180" fill="#e6f4ff" stroke="#7fb3ff" rx="6" />
+      <rect x="86" y="0" width="78" height="180" fill="#fff7e6" stroke="#ffd08a" rx="6" />
+      <rect x="172" y="0" width="100" height="180" fill="#f0fff2" stroke="#9ae6a0" rx="6" />
+      <text x="12" y="18" class="small">events_2025_10</text>
+      <text x="98" y="18" class="small">events_2025_11</text>
+      <text x="186" y="18" class="small">events_2025_12</text>
+
+      <text x="8" y="200" class="small">Fast pruning / DROP partition</text>
+      <line x1="40" y1="206" x2="40" y2="222" stroke="#333" stroke-width="1" />
+      <polygon points="36,222 44,222 40,228" fill="#333" />
+    </g>
+
+    <text x="18" y="342" class="small">Note: Single server. Good for time-range queries & easy deletes.</text>
+  </g>
+
+  <!-- Clustering (middle) -->
+  <g transform="translate(350,40)">
+    <rect class="box" x="0" y="0" width="300" height="380" />
+    <text x="18" y="26" class="label">Clustering (replication / HA)</text>
+
+    <!-- primary and replicas -->
+    <g transform="translate(40,60)">
+      <rect x="80" y="0" width="120" height="44" rx="8" fill="#fff" stroke="#cbd5e1" />
+      <text x="120" y="28" class="small">Primary (writes)</text>
+
+      <rect x="10" y="90" width="120" height="40" rx="8" fill="#fff" stroke="#cbd5e1" />
+      <text x="30" y="116" class="small">Replica 1 (reads)</text>
+
+      <rect x="150" y="90" width="120" height="40" rx="8" fill="#fff" stroke="#cbd5e1" />
+      <text x="170" y="116" class="small">Replica 2 (reads)</text>
+
+      <!-- arrows primary -> replicas -->
+      <path class="arrow" d="M160 44 L70 90" />
+      <path class="arrow" d="M160 44 L260 90" />
+
+      <text x="8" y="150" class="small">Logical/streaming replication. Monitor lag before sending reads.</text>
+    </g>
+
+    <text x="18" y="342" class="small">Note: Cluster provides HA + read scale. Writes -> primary only.</text>
+  </g>
+
+  <!-- Sharding (right) -->
+  <g transform="translate(700,40)">
+    <rect class="box" x="0" y="0" width="280" height="380" />
+    <text x="18" y="26" class="label">Sharding (horizontal split across instances)</text>
+
+    <!-- router -->
+    <g transform="translate(20,50)">
+      <rect x="90" y="0" width="100" height="36" rx="6" fill="#fff" stroke="#94a3b8" />
+      <text x="104" y="24" class="small">App Router / Shard Map</text>
+
+      <!-- shard boxes -->
+      <g transform="translate(10,60)">
+        <rect x="0" y="0" width="240" height="60" rx="6" fill="#fff" stroke="#e2e8f0" />
+        <text x="8" y="18" class="small">Shard 0 (replica set)</text>
+        <text x="8" y="34" class="small">[Primary + 2 replicas]</text>
+
+        <rect x="0" y="80" width="240" height="60" rx="6" fill="#fff" stroke="#e2e8f0" />
+        <text x="8" y="98" class="small">Shard 1 (replica set)</text>
+        <text x="8" y="114" class="small">[Primary + 2 replicas]</text>
+
+        <rect x="0" y="160" width="240" height="60" rx="6" fill="#fff" stroke="#e2e8f0" />
+        <text x="8" y="178" class="small">Shard N (replica set)</text>
+        <text x="8" y="194" class="small">[Primary + 2 replicas]</text>
+
+        <!-- arrows from router to shards -->
+        <path class="arrow" d="M140 18 L220 18" />
+        <path class="arrow" d="M140 98 L220 98" />
+        <path class="arrow" d="M140 178 L220 178" />
+      </g>
+
+      <text x="8" y="260" class="small">Note: Router directs per-key traffic to correct shard; cross-shard = fan-out.</text>
+    </g>
+
+    <text x="18" y="342" class="small">Note: Sharding scales throughput & storage across machines; rebalancing is costly.</text>
+  </g>
+
+  <!-- Footer / legend -->
+  <g transform="translate(20,440)">
+    <text x="0" y="0" class="small">Legend: partitions = slices inside single server • cluster = primary + replicas • shard = independent DB instance (often a replica set)</text>
+  </g>
+</svg>
