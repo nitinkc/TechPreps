@@ -178,7 +178,7 @@ A: Cosmos requires batching around partition key constraints & RU limits; Postgr
 A: Partitioning is **logical data subdivision** (often within a single database instance) to improve
 manageability/performance—e.g., PostgreSQL table partitioned by date; queries still executed locally with planner aware of partitions (pruning). 
 
-[See detailed notes in Database Design](L2_Technical_Interview_Guide.md#database-design)
+[See detailed notes in Database Design](docs/system_design/database_design.md)
 
 Sharding **distributes** data across multiple **independent physical servers/nodes** (distinct database instances) for horizontal scale. 
 - Key differences: (1) Scope—partitioning: intra-instance; sharding: cross-instance. (2) Governance—partitioning keeps global ACID semantics (single transaction scope), sharding may require distributed transactions or eventual consistency across shards. (3) Rebalancing—partition moves usually metadata operations; shard rebalancing involves copying data between servers. (4) Query complexity—partitioned queries transparently optimized (partition pruning); sharded queries may fan-out to multiple shards, requiring aggregation. (5) Keys—partition key chosen for data lifecycle or pruning (e.g., date), shard key chosen for cardinality & even load distribution (e.g., userId hash). In NoSQL (MongoDB, Cassandra): term "partition key" (Cassandra) defines data placement on cluster nodes—effectively both partitioning and sharding combined; confusion stems from overloaded terminology. Mnemonic: Partitioning slices a table; Sharding slices the cluster. Choose partitioning for very large single-table management & pruning; choose sharding when a single machine can’t handle total data volume/read+write throughput.
@@ -324,9 +324,9 @@ A: Normalize (lowercase, strip punctuation), count with HashMap, maintain min-he
 ---
 ## K. Coding & Algorithms
 
-Consolidated coding problems index: `answers/coding_questions.md`
+Consolidated coding problems index: `docs/algo/coding_questions.md`
 
-Use the canonical consolidated index above for one-line problem summaries, short solutions, complexity notes, and links to the detailed write-ups in `answers/` (e.g., `answers/01_shortest_path_weighted_graph.md`). This keeps the structured guide focused on Q/A and avoids duplicating the same coding problem list in multiple docs.
+Use the canonical consolidated index above for one-line problem summaries, short solutions, complexity notes, and links to the detailed write-ups in `docs/algo/` (e.g., `docs/algo/01_shortest_path_weighted_graph.md`). This keeps the structured guide focused on Q/A and avoids duplicating the same coding problem list in multiple docs.
 
 ---
 ## L. Behavioral & Process
@@ -391,15 +391,15 @@ A: (Answer context-specific) Typical daily tasks: write queries, tune execution 
 ---
 ## Cross-Reference
 
-For full code samples & in-depth explanations, open `L2_Technical_Interview_Guide.md` and navigate to matching sections:
-- Circuit Breaker Implementation → "Circuit Breaker Pattern"
-- Terraform sample → "Terraform"
-- Caching + LRU code → "Caching"
-- SAGA orchestration/choreography → "SAGA Pattern"
-- SQL vs NoSQL, indexing details → "Database Design"
-- System architecture diagram & rate limiter design → "System Design"
-- Coding problems solutions → "Coding Problems"
-- Error handling & debugging flows → "Error Handling & Debugging"
+For full code samples & in-depth explanations, open the matching docs:
+- Circuit Breaker Implementation → `docs/system_design/circuit_breaker.md`
+- Terraform sample → `docs/system_design/terraform.md`
+- Caching + LRU code → `docs/system_design/caching.md`
+- SAGA orchestration/choreography → `docs/system_design/saga_pattern.md`
+- SQL vs NoSQL, indexing details → `docs/system_design/database_design.md`
+- System architecture diagram & rate limiter design → `docs/system_design/system_design.md`
+- Coding problems solutions → `docs/algo/coding_questions.md`
+- Error handling & debugging flows → `docs/system_design/error_handling_debugging.md`
 
 ---
 ## Suggested Next Enhancements

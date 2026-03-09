@@ -5,11 +5,12 @@ site_description: "Generated documentation site from the repository's docs/ fold
 docs_dir: "docs"
 site_dir: "site"
 theme:
-  name: "mkdocs"
-# If you want a different theme (e.g., material), install it in the workflow and change this value.
+  name: "material"
+  # Material theme features - adjust as needed
+  features:
+    - navigation.expand
+    - navigation.sections
+    - search.highlight
+    - search.suggest
 
-# Navigation can be omitted to allow MkDocs to auto-discover pages under `docs/`.
-# nav:
-#   - Home: index.md
-#   - System Design: system_design/cheatsheet_partitioning_sharding_clustering_revision.md
-
+# If you want a different theme configuration or extra plugins, add them here.
