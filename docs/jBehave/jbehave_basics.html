@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'/>
+  <title>JBehave Basics & Applied Overview</title>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/reveal.min.css'/>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/theme/white.min.css' id='theme'/>
+  <link rel='stylesheet' href='./reveal_custom.css'/>
+  <style>
+    code { font-size: 0.8em; white-space: pre-wrap; }
+    .reveal section p { font-size: 0.95em; }
+    ul { font-size: 0.95em; }
+    .reveal .fragment { transition: opacity 300ms ease, transform 300ms ease; }
+  </style>
+</head>
+<body>
+<div class='reveal'>
+  <div class='slides'>
+    <section class="compact"><h2>Summary</h2>
+<p class="fragment">BDD (Behavior-Driven Development): write executable specifications in human-readable form (Gherkin/JBehave stories) that map directly to automated step code.</p>
+<p class="fragment">Goals: improve collaboration across product/QA/engineering, provide living documentation, and enable clear acceptance criteria.</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">When to use BDD: for business-facing behavior, acceptance criteria, or complex workflows that benefit from readable specs and stakeholder buy-in.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>Basics: BDD</h2>
+<p class="fragment">What is BDD? Write examples in plain language (Given/When/Then) that describe behavior; map examples to automated step implementations so the spec is executable.</p>
+<p class="fragment">Key benefits: shared understanding, living documentation, acceptance criteria automated as tests.</p>
+<p class="fragment">Notes:</p>
+<p class="fragment">Keep scenarios business-focused and avoid implementation detail in the story text.</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Prefer small, focused scenarios that are easy to read and maintain.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>Test Types</h2>
+<p class="fragment">Component: fast, isolated tests for a single service/module (mock external dependencies). Good for developer feedback.</p>
+<p class="fragment">Integration: tests across multiple components or services (real or containerized dependencies). Good for validating interactions.</p>
+<p class="fragment">Functional / E2E: end-to-end business flow validation in a full stack environment. Good for acceptance testing.</p>
+<div class="more-indicator"></div></section><section class="compact"><p class="fragment">Regression: broad suites verifying previously working features remain stable after changes. Run before major releases.</p>
+<p class="fragment">Smoke: small, fast checks of critical paths after deployment.</p>
+<p class="fragment">Guidance:</p>
+<p class="fragment">Align frequency with the test pyramid: many component, fewer integration, fewest functional/regression.</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Use `@testType` meta tags so CI can select appropriate subsets.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>Decision Guide &amp; Examples</h2>
+<p class="fragment">Quick checklist to pick a test type:</p>
+<p class="fragment">Scope = single class / service -&gt; Component</p>
+<p class="fragment">Scope = couple services / DB interactions -&gt; Integration</p>
+<p class="fragment">Scope = full user/business flow -&gt; Functional / E2E</p>
+<div class="more-indicator"></div></section><section class="compact"><p class="fragment">Need very fast feedback -&gt; Component/Smoke</p>
+<p class="fragment">Need long-term replay/validation -&gt; Regression</p>
+<p class="fragment">Decision flow (short):</p>
+<p class="fragment">1. Who cares about the result? (Dev -&gt; Component; Product/QA -&gt; Functional)</p>
+<div class="more-indicator"></div></section><section class="compact"><p class="fragment">2. Does the scenario require external systems? (Yes -&gt; Integration; No -&gt; Component)</p>
+<p class="fragment">3. Is it a critical path for production? (Yes -&gt; include in Smoke/Regression)</p>
+<p class="fragment">Example Gherkin (concise):</p>
+<div class="more-indicator"></div></section><section class="compact"><pre><code>
+Feature: Create product recipe
+  Scenario: Product manager creates beverage
+    Given I am logged in as product manager
+    When I create a beverage with ingredients
+    Then the recipe should be available for baristas
+</code></pre>
+<p class="fragment">Common run/filter commands:</p>
+<div class="more-indicator"></div></section><section class="compact"><pre><code>
+# run component tests only
+mvn test -Dmeta.filter=&quot;+testType component&quot;
+# run smoke + component
+mvn test -Dmeta.filter=&quot;+testType smoke,+testType component&quot;
+</code></pre>
+<p class="fragment">Java step mapping (example):</p>
+<pre><code>
+@Given(&quot;I am logged in as product manager&quot;)
+public void loginAsProductManager() {
+    // setup user/session for scenario
+}
+</code></pre>
+<p class="fragment">Notes:</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Tag with `@testType` to enable selective CI execution.</p>
+<p class="fragment">If you want further granularity, add `@priority` and `@duration` meta tags.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>1. What is JBehave?</h2>
+<p class="fragment">Behavior-Driven Development (BDD) framework for Java.</p>
+<p class="fragment">Defines executable specifications using human-readable stories (plain text).</p>
+<p class="fragment">Maps natural language steps (Given/When/Then) to Java methods via annotations.</p>
+<p class="fragment">Facilitates collaboration between product, QA, and engineering.</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Notes:</p>
+<p class="fragment">Emphasize shared language, traceability from requirements to automated tests.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>2. Core Concepts</h2>
+<p class="fragment">Story: A text file (&quot;*.story&quot;) containing narrative + scenarios.</p>
+<p class="fragment">Scenario: A concrete example describing behavior.</p>
+<p class="fragment">Steps: Given (context), When (action), Then (outcome/assertions).</p>
+<p class="fragment">Examples Table: Data-driven scenario parameters.</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Meta: Tags/metadata controlling filtering/grouping (e.g., @testType functional).</p>
+<p class="fragment">Lifecycle: Hooks (BeforeStories/AfterStories/BeforeScenario/AfterScenario) for setup/teardown.</p>
+<p class="fragment">Notes:</p>
+<p class="fragment">In our repo, stories are under `rtdx-functional-test/src/test/resources/stories/`.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>3. Story File Anatomy (From FT-recipe-service.story)</h2>
+<pre><code>
+Meta:
+@component rtdx-product-flow
+
+Narrative:rtdx-product-recipe-service-flow functional test
+
+Scenario: (1) opc create smoke
+Meta: @testType functional smoke
+Given initialize the test with &lt;lineItemSku&gt; &lt;lineItemQty&gt; &lt;childLineItemSkus&gt; and &lt;childLineItemQtysPerLineItem&gt;
+When invoke opc endpoint with &lt;country&gt;
+Then validate the response with &lt;responseFile&gt;
+
+Examples:
+|testcaseid |country |lineItemSku |lineItemQty |childLineItemSkus |childLineItemQtysPerLineItem |responseFile
+|FT-rtdx-product-recipe-01-01 |ca |11168754 |1 |NA |NA |response/opcNonBeverage_20.json
+</code></pre>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Key elements: Meta tags, Scenario title, Steps with angle-bracket parameters, Examples table for data rows.</p>
+<p class="fragment">Notes:</p>
+<p class="fragment">Angle brackets map to column headers.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>4. Parameterization Mechanics</h2>
+<p class="fragment">Angle bracket placeholders (&lt;param&gt;) replaced per Examples row.</p>
+<p class="fragment">Column headers must match placeholders exactly (case-sensitive).</p>
+<p class="fragment">Each row = one executed scenario iteration.</p>
+<p class="fragment">Special values like &quot;NA&quot; used to skip optional logic paths.</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Notes:</p>
+<p class="fragment">Consistent naming improves maintainability.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>5. Step Definitions (Java Mapping)</h2>
+<p class="fragment">Annotations: `@Given`, `@When`, `@Then` (plus `@AfterStories`).</p>
+<p class="fragment">Pattern matching of the textual step to method signature.</p>
+<p class="fragment">`@Named(&quot;param&quot;)` binds example table value to method parameter.</p>
+<p class="fragment">Supports multiple annotated methods with similar prefixes (overloads by pattern).</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Example:</p>
+<pre><code>
+@Given(&quot;publish $eventType event to EH using file $xmlfile with $countryCode&quot;)
+public void setTestDataAndPublishEventPayload(
+    @Named(&quot;eventType&quot;) String eventType,
+    @Named(&quot;xmlfile&quot;) String xmlFile,
+    @Named(&quot;countryCode&quot;) String countryCode) { /* implementation omitted */ }
+</code></pre>
+<p class="fragment">Notes:</p>
+<p class="fragment">Dollar-sign variables ($var) inside annotation pattern become named parameters.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>6. Pattern Styles</h2>
+<p class="fragment">Forms used in project:</p>
+<p class="fragment">1. Direct variable substitution: `publish $eventType event...`</p>
+<p class="fragment">2. Mixed text &amp; params: `staging records from $stagingInputFile ...`</p>
+<p class="fragment">3. No explicit @Named when positional mapping suffices (rare; we use @Named for clarity).</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Use commas in parameters to handle multi-file inputs (split logic internally).</p>
+<p class="fragment">Notes:</p>
+<p class="fragment">Keep patterns stable; changing them breaks story-to-code binding.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>7. Test Data Strategy</h2>
+<p class="fragment">ThreadLocal `testData` holds a `Map&lt;String, Supplier&lt;String&gt;&gt;` across step executions in one scenario.</p>
+<p class="fragment">Data generated once per scenario: `payloadGeneratorService.generateProductDataMap(countryCode)`.</p>
+<p class="fragment">Re-used for subsequent Given steps (e.g., chains of publishes).</p>
+<p class="fragment">Ensures correlated IDs (SKU, correlationId) remain consistent.</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Notes:</p>
+<p class="fragment">ThreadLocal isolates parallel scenario runs.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>8. Publishing &amp; Event Flow</h2>
+<p class="fragment">Given steps produce payloads from XML templates (may contain tokens substituted by suppliers).</p>
+<p class="fragment">`payloadGeneratorService.generatePayloadFromXml(file, map)` builds final event JSON/XML.</p>
+<p class="fragment">`resourceClientService.publishPayloadToEventhub(eventType, payload, map)` sends to Event Hub.</p>
+<p class="fragment">Sleep intervals (`Thread.sleep`) allow downstream ingestion before validations.</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Notes:</p>
+<p class="fragment">Potential optimization: replace static sleeps with polling.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>9. Staging Record Handling</h2>
+<p class="fragment">Some scenarios pre-insert staging rows before publishing events.</p>
+<p class="fragment">Method `handleStagingRecords(eventType, stagingInputTranslation, map)` parses JSON to domain objects and inserts into Cassandra via `databaseClientService`.</p>
+<p class="fragment">Conditional logic: if status == PERSISTED then also insert final product recipe record.</p>
+<p class="fragment">Notes:</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Separation of staging vs final tables allows diff validation.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>10. Validation Patterns</h2>
+<p class="fragment">Then steps query Cassandra for inserted data.</p>
+<p class="fragment">Use domain model deserialization (`convertPayloadToObject`) + deep structural equality via Jackson serialization.</p>
+<p class="fragment">Count assertions ensure expected number of rows.</p>
+<p class="fragment">Diff validations compare arrays of `DataStagingDifferences` objects.</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Special case validations (HTTP response codes) via `resourceClientService.invokeEphProductService`.</p>
+<p class="fragment">Notes:</p>
+<p class="fragment">Serializing to JSON strings avoids brittle object reference comparisons.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>11. Example: Response Validation Step</h2>
+<p class="fragment">Story step:</p>
+<p class="fragment">`Then validate read service 200 after ingestion`</p>
+<p class="fragment">Mapped method asserts status code, body existence, presence of mandatory fields, null / non-null conditions based on expected code.</p>
+<p class="fragment">Notes:</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Scenario rows provide expectedResponseCode parameter.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>12. Cleanup Strategy</h2>
+<p class="fragment">Per-scenario cleanup steps delete inserted rows based on event type.</p>
+<p class="fragment">`@Then(&quot;cleanup the $eventType story data using file $xmlFile&quot;)` replays expected payload for accurate key extraction.</p>
+<p class="fragment">`@AfterStories` clears Kafka consumer groups to avoid state leakage.</p>
+<p class="fragment">Notes:</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Idempotent cleanup prevents test data accumulation.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>13. Meta Tags &amp; Filtering</h2>
+<p class="fragment">Meta lines: `Meta: @testType functional smoke`.</p>
+<p class="fragment">Allows selecting subsets (e.g., smoke vs regression) via JBehave configuration (`storyFilter` or meta filters in runner).</p>
+<p class="fragment">Other tag: `@component rtdx-product-flow` for grouping.</p>
+<p class="fragment">Notes:</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Use consistent tag taxonomy for CI pipelines.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>14. Handling Optional / NA Values</h2>
+<p class="fragment">Convention: parameter value &quot;NA&quot; triggers early return or skip logic (e.g., skip publishing or validation).</p>
+<p class="fragment">Simplifies examples table by keeping a single scenario structure.</p>
+<p class="fragment">Ensure step code checks `&quot;NA&quot;.equalsIgnoreCase(value)` before actions.</p>
+<p class="fragment">Notes:</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Document NA semantics for new contributors.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>15. Error Handling &amp; Assertions</h2>
+<p class="fragment">JUnit Jupiter assertions: `assertEquals`, `assertTrue`, `assertFalse`, `assertNotNull`.</p>
+<p class="fragment">Descriptive messages for mismatch contexts (sku, country, status).</p>
+<p class="fragment">Minimal custom exception usage; rely on assertion failures to mark scenario fail.</p>
+<p class="fragment">Notes:</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Consider adding soft assertions if multiple validations per step become critical.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>16. Data Modeling</h2>
+<p class="fragment">Domain classes: `productDetail`, `componentConsumption`, `baseProductConsumption`, etc.</p>
+<p class="fragment">Mapper choices: Jackson `ObjectMapper` for JSON, `XmlMapper` for XML.</p>
+<p class="fragment">Use of `TypeReference&lt;&gt;` for generic collections (e.g., `new TypeReference&lt;List&lt;ConsumptionStagingRecord&gt;&gt;() {}`).</p>
+<p class="fragment">Notes:</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Maintain version stability in model classes to avoid test breakage.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>17. Reusable Utilities</h2>
+<p class="fragment">`convertPayloadToObject` centralizes serialization logic.</p>
+<p class="fragment">`payloadGeneratorService` handles token replacement and dynamic test data injection.</p>
+<p class="fragment">`databaseClientService` encapsulates persistence layer queries/deletes.</p>
+<p class="fragment">Notes:</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Keeps step definitions thin and focused on orchestration.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact">
+<h2>18. Performance Considerations</h2>
+<p class="fragment">Current design uses fixed sleeps (5s / 10s). Could extend with polling loops checking ingestion completion.</p>
+<p class="fragment">Bulk inserts done sequentially; potential for batching if supported by service.</p>
+<p class="fragment">Notes:</p>
+<p class="fragment">Optimize only after stability; measure flakiness first.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>19. Best Practices Summary</h2>
+<p class="fragment">Keep story language consistent &amp; business-oriented.</p>
+<p class="fragment">Name example columns clearly; avoid ambiguous abbreviations.</p>
+<p class="fragment">Limit one behavior focus per scenario section; use separate Scenarios for variants.</p>
+<p class="fragment">Centralize data generation; avoid duplication inside steps.</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Ensure cleanup is always reachable (even after failure) via lifecycle hooks.</p>
+<p class="fragment">Tag stories for selective execution in CI.</p>
+<p class="fragment">Notes:</p>
+<p class="fragment">Review step patterns quarterly for drift.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>20. Common Pitfalls</h2>
+<p class="fragment">Changing annotation text breaks story binding.</p>
+<p class="fragment">Mismatched example headers vs placeholder names -&gt; missing parameter injection.</p>
+<p class="fragment">Overuse of sleeps leads to long test cycles.</p>
+<p class="fragment">Skipping cleanup causes environment contamination.</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Non-deterministic data (timestamps) must be normalized or offset-managed.</p>
+<p class="fragment">Notes:</p>
+<p class="fragment">Add validation to detect orphaned test data.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>21. Extending the Suite</h2>
+<p class="fragment">Add new story: place under `stories/`, include Meta tags.</p>
+<p class="fragment">Create/extend step method with precise pattern.</p>
+<p class="fragment">Add domain serialization if new payload types introduced.</p>
+<p class="fragment">Add targeted cleanup logic for new tables.</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Update CI meta filters if introducing new tags.</p>
+<p class="fragment">Notes:</p>
+<p class="fragment">Prefer incremental additions; keep stories small (&lt; ~200 lines).</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>22. Running Stories (Conceptual)</h2>
+<p class="fragment">Configure JBehave runner (JUnit or Spring) specifying story paths &amp; meta filters.</p>
+<p class="fragment">Use `mvn test -Dmeta.filter=&#x27;+functional -smoke&#x27;` style (example; adapt to actual runner config).</p>
+<p class="fragment">Integrate with pipeline jobs for smoke vs full regression.</p>
+<p class="fragment">Notes:</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Check actual project runner config for exact filter syntax.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact">
+<h2>23. Traceability Matrix (Illustrative)</h2>
+<p class="fragment">Story scenario IDs (e.g., `FT-rtdx-product-recipe-flow-BR004-03-ExtraPSI`) map to business rule IDs (BR004) enabling trace linking.</p>
+<p class="fragment">Examples table row IDs become report entries.</p>
+<p class="fragment">Notes:</p>
+<p class="fragment">Consider exporting results to dashboard keyed by testcaseid.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>24. Minor Details &amp; Nuances</h2>
+<p class="fragment">Use of comma-separated files/IDs inside single parameter (split within step).</p>
+<p class="fragment">Differentiating staging vs final tables by status (PERSISTED triggers second insert).</p>
+<p class="fragment">ThreadLocal cleared explicitly in cleanup to avoid memory retention.</p>
+<p class="fragment">Diff JSON validation uses array length + deep object equality.</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Special handling for unknown sellable IDs (set to &quot;UNKNOWN&quot; before validation).</p>
+<p class="fragment">Notes:</p>
+<p class="fragment">Document special case transformations.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>25. Actionable Improvements (Next Steps)</h2>
+<p class="fragment">Replace static sleep with polling (max timeout) for faster suites.</p>
+<p class="fragment">Add BeforeScenario hook for automatic staging cleanup / isolation.</p>
+<p class="fragment">Introduce soft assertion aggregator for richer failure reports.</p>
+<p class="fragment">Add meta-driven dynamic timeouts (e.g., @slow).</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Add helper to auto-generate example rows from CSV.</p>
+<p class="fragment">Notes:</p>
+<p class="fragment">Prioritize based on test runtime &amp; flakiness metrics.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>26. Glossary</h2>
+<p class="fragment">EventHub: Messaging system receiving ingestion events.</p>
+<p class="fragment">Staging Table: Intermediate persistence for validation &amp; diff tracking.</p>
+<p class="fragment">Correlation ID: Unique identifier tying events &amp; audit records.</p>
+<p class="fragment">Meta Tag: Story-level label for filtering.</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Diff JSON: Structured difference representation for staging vs expected.</p>
+<p class="fragment">Notes:</p>
+<p class="fragment">Include in onboarding docs.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>27. Quick Checklist for Adding a Scenario</h2>
+<p class="fragment">1. Identify business rule / behavior.</p>
+<p class="fragment">2. Draft Given/When/Then in business language.</p>
+<p class="fragment">3. Define required parameters &amp; columns.</p>
+<p class="fragment">4. Add row(s) to Examples ensuring data variety.</p>
+<div class="more-indicator"></div></section><section class="compact"><p class="fragment">5. Confirm step definitions match pattern.</p>
+<p class="fragment">6. Add validation &amp; cleanup steps.</p>
+<p class="fragment">7. Tag with appropriate Meta (e.g., @testType functional).</p>
+<p class="fragment">Notes:</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Perform dry run locally before PR.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>28. Summary</h2>
+<p class="fragment">JBehave enables readable, executable specs.</p>
+<p class="fragment">Project leverages strong data-driven patterns and dynamic payload generation.</p>
+<p class="fragment">Consistent structure (Meta, Scenario, Examples) accelerates expansion.</p>
+<p class="fragment">Robust validations compare serialized domain objects for accuracy.</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Opportunities exist to optimize runtime &amp; resilience.</p>
+<p class="fragment">Notes:</p>
+<p class="fragment">End with Q&amp;A.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>29. References &amp; Further Reading</h2>
+<p class="fragment">JBehave Docs: https://jbehave.org/</p>
+<p class="fragment">BDD Intro: https://cucumber.io/docs/bdd/ (conceptual overlap)</p>
+<p class="fragment">Project paths: `src/test/resources/stories/`, `.../steps/ProductJbehaveSteps.java`</p>
+<p class="fragment">Notes:</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Encourage contributors to read official docs for advanced features (composite steps, parameter converters).</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>30. Appendix: Code Snippets</h2>
+<p class="fragment">Parameter binding:</p>
+<pre><code>
+@Then(&quot;validate read service $expectedResponseCode after ingestion&quot;)
+public void validateReadServices(@Named(&quot;expectedResponseCode&quot;) String expectedResponseCode) { /* implementation omitted */ }
+</code></pre>
+<p class="fragment">Staging diff validation:</p>
+<pre><code>
+private void validateDiffJson(String expectedFileName, String actualDiffJson) { /* compare arrays */ }
+</code></pre>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Cleanup:</p>
+<pre><code>
+@AfterStories
+public void cleanupResource() { /* delete consumer groups */ }
+</code></pre>
+<p class="fragment">Notes:</p>
+<p class="fragment">Keep snippets minimal; full file exists in repo.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>31. Story Anatomy: BPC Ingestion Example</h2>
+<p class="fragment">Extract from `RT-rtdx-product-bpc-ingestion.story`:</p>
+<div class="more-indicator"></div></section><section class="compact"><pre><code>
+Scenario: Check bpc ingestion is inserting valid event data into sbux_bpc look-up table and invalid data into consumption_staging table
+Meta: @testType component regression
+Given Dependency publish &lt;dependencyEventType&gt; event using &lt;pdxFile&gt; file and publish &lt;eventType&gt; event to EH using file &lt;bpcFile&gt; with &lt;countryCodes&gt;
+Then wait for the processing for &lt;delay&gt; seconds
+Then validate &lt;eventType&gt; record in lookUp table using &lt;expectedLookUpRecords&gt; file
+Then verify ingestion event with &lt;logStatus&gt;
+Then delete the &lt;eventType&gt; data inserted in the staging table
+Then cleanup the &lt;eventType&gt; story data using file &lt;expectedLookUpRecords&gt;
+And cleanup the &lt;eventType&gt; staging data
+</code></pre>
+<div class="more-indicator"></div></section><section class="compact"><p class="fragment">Highlights:</p>
+<p class="fragment">Mixed Given with dependency + main publish sequence.</p>
+<p class="fragment">Explicit wait step parameterized (&lt;delay&gt; seconds) – candidate for polling enhancement.</p>
+<p class="fragment">Multiple cleanup &amp; validation Thens (sequential outcomes vs single Then + And).</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Meta combines multiple tags (@testType component regression) enabling dual classification.</p>
+<p class="fragment">Notes:</p>
+<p class="fragment">Consider consolidating sequential cleanup steps into lifecycle hooks to reduce repetition.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>32. Test Types Overview (Meta Tag Strategy)</h2>
+<p class="fragment">Categories used (from executive summary):</p>
+<p class="fragment">component: isolated service or module verification.</p>
+<p class="fragment">integration: multi-service / external system interaction.</p>
+<p class="fragment">functional: business rule &amp; user-facing behavior.</p>
+<div class="more-indicator"></div></section><section class="compact"><p class="fragment">regression: broad re-run for stability assurance.</p>
+<p class="fragment">smoke: rapid critical-path health check.</p>
+<p class="fragment">Guidelines:</p>
+<p class="fragment">Prefer single primary @testType; add secondary only when justified (e.g., component regression for a critical component scenario included in regression pack).</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Align execution frequency with pyramid (many component, few functional/regression).</p>
+<p class="fragment">Notes:</p>
+<p class="fragment">Maintain a taxonomy doc; avoid tag proliferation (keeps filtering predictable).</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>33. Advanced Meta Filtering &amp; CI Usage</h2>
+<p class="fragment">Sample Maven invocations (adjust to actual runner config):</p>
+<pre><code>
+# Only component tests
+mvn test -Dmeta.filter=&quot;+testType component&quot;
+# Smoke OR component
+mvn test -Dmeta.filter=&quot;+testType smoke,+testType component&quot;
+# Exclude regression
+mvn test -Dmeta.filter=&quot;-testType regression&quot;
+# High-priority functional tests
+mvn test -Dmeta.filter=&quot;+testType functional +priority high&quot;
+</code></pre>
+<p class="fragment">Recommendations:</p>
+<div class="more-indicator"></div></section><section class="compact"><p class="fragment">Add @priority and @risk meta to enable risk-based subsets.</p>
+<p class="fragment">Introduce @duration fast|medium|slow to allow time-boxed runs.</p>
+<p class="fragment">Enforce a linter that flags scenarios missing @testType.</p>
+<p class="fragment">Notes:</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Meta filters are additive/subtractive; clearly document precedence in CONTRIBUTING.md.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>34. Converting Markdown to PPTX</h2>
+<p class="fragment">Option 1: Pandoc (recommended)</p>
+<pre><code>
+pandoc JBehave_Basics_Presentation.md -o JBehave_Basics_Presentation.pptx \
+  --from markdown+emoji --slide-level=1 \
+  --metadata title=&quot;JBehave Basics &amp; Applied Overview&quot;
+</code></pre>
+<p class="fragment">Option 2: Reveal.js (HTML deck)</p>
+<pre><code>
+pandoc JBehave_Basics_Presentation.md -t revealjs -s -o jbehave_basics.html
+</code></pre>
+<div class="more-indicator"></div></section><section class="compact"><p class="fragment">Option 3: VS Code / IntelliJ plugin to export markdown slides.</p>
+<p class="fragment">Tips:</p>
+<p class="fragment">Use H1 (#) for slide separation (already done).</p>
+<p class="fragment">Validate code block syntax highlighting preserved in PPTX.</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Post-export, add corporate template styling manually.</p>
+<p class="fragment">Notes:</p>
+<p class="fragment">Automate conversion in CI (e.g., nightly doc build) to keep slides current.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact">
+<h2>35. Programmatic Slide Structure (For Automation)</h2>
+<p class="fragment">A JSON representation file `JBehave_Basics_Presentation_Slides.json` is provided (see repository) containing ordered slides: title, bullet points, notes.</p>
+<p class="fragment">Use script to ingest JSON and generate PPTX via Apache POI or python-pptx.</p>
+<p class="fragment">Notes:</p>
+<p class="fragment">Keeps content source-of-truth in markdown while enabling automated distribution.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>36. Next Recommended Enhancements</h2>
+<p class="fragment">1. Introduce polling utility (replaces fixed sleeps) with timeout + jitter.</p>
+<p class="fragment">2. Add composite steps for repeated publish + validate + cleanup pattern.</p>
+<p class="fragment">3. Parameter converters (e.g., CSV to List&lt;String&gt;) instead of manual split.</p>
+<p class="fragment">4. Report generator mapping testcaseid -&gt; pass/fail -&gt; business rule ID.</p>
+<div class="more-indicator"></div></section><section class="compact"><p class="fragment">5. Add @dataSource meta for provenance (xml|json|dbSeed).</p>
+<p class="fragment">6. Implement soft assertions collector for multi-field validations.</p>
+<p class="fragment">7. Create onboarding script that verifies environment, runs smoke subset.</p>
+<p class="fragment">Notes:</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Prioritize polling + composite steps for quickest reliability gain.</p>
+
+<div class="more-indicator"></div>
+</section><section class="compact"><h2>37. Closing Slide (Use for Presentation Delivery)</h2>
+<p class="fragment">Key Takeaways:</p>
+<p class="fragment">Stories = living specifications; keep language business-centric.</p>
+<p class="fragment">Step definitions should orchestrate, not embed heavy logic.</p>
+<p class="fragment">Meta tagging unlocks selective, risk-based execution.</p>
+<div class="more-indicator"></div></section><section class="compact"><p class="fragment">Data-driven Examples amplify coverage efficiently.</p>
+<p class="fragment">Continuous improvement: optimize waits, reduce duplication, enhance reporting.</p>
+<p class="fragment">Call to Action:</p>
+<p class="fragment">Adopt proposed enhancements in upcoming sprint; nominate owner for polling utility.</p>
+<div class="more-indicator"></div></section><section class="compact">
+<p class="fragment">Notes:</p>
+<p class="fragment">Invite feedback; set review cadence (monthly) for test suite health metrics.</p>
+
+<div class="more-indicator"></div>
+</section>
+  </div>
+</div>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/reveal.min.js'></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    slideNumber: true,
+    transition: 'convex',
+    backgroundTransition: 'fade',
+    fragments: true,
+    keyboard: true,
+    fragments: { sync: true }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>JBehave Basics — Slide Deck</title>
+  <style>
+    :root{--bg:#0b1221;--fg:#e6eef8;--accent:#57b6ff}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial}
+    body{background:linear-gradient(180deg,#071022 0%, #0b1221 60%);color:var(--fg);display:flex;align-items:center;justify-content:center}
+    .deck{width:960px;max-width:94%;height:640px;max-height:86vh;position:relative;box-shadow:0 20px 60px rgba(2,6,23,.7);overflow:hidden;border-radius:10px;background:rgba(8,12,20,.45);backdrop-filter:blur(6px);}
+    .slide{width:100%;height:100%;padding:48px 64px;box-sizing:border-box;display:none;flex-direction:column}
+    .slide.active{display:flex}
+    h1,h2{margin:0 0 12px 0}
+    h1{font-size:34px;color:var(--accent)}
+    h2{font-size:22px}
+    p{margin:8px 0 12px;line-height:1.45;color:#cfe6ff}
+    ul{margin:6px 0 12px 1.2em}
+    pre{background:#071827;padding:12px;border-radius:6px;overflow:auto;color:#d7f0ff}
+    .footer{position:absolute;left:16px;bottom:12px;font-size:13px;color:#8fb7d9}
+    .pager{position:absolute;right:16px;bottom:12px;font-size:13px;color:#8fb7d9}
+    .controls{position:absolute;top:14px;right:18px}
+    button{background:transparent;border:1px solid rgba(200,230,255,.08);color:var(--fg);padding:8px 10px;border-radius:6px;margin-left:8px;cursor:pointer}
+    .note{margin-top:auto;font-size:13px;color:#9fb8d8}
+    /* responsive */
+    @media (max-width:640px){.deck{height:86vh;padding:0}.slide{padding:20px}}
+  </style>
+</head>
+<body>
+  <div class="deck" role="application" aria-label="JBehave Basics slides">
+
+    <div class="slide active" id="s0">
+      <h1>JBehave Basics & Applied Overview</h1>
+      <h2>Summary</h2>
+      <p>BDD (Behavior-Driven Development): write executable specifications in human-readable form (Gherkin/JBehave stories) mapped to automated step code.</p>
+      <ul>
+        <li>Goals: better collaboration, living documentation, clear acceptance criteria.</li>
+        <li>Use BDD for business-facing behaviour and complex workflows.</li>
+      </ul>
+      <div class="note">Use ←/→ or click the arrows to navigate slides. Press H for help.</div>
+    </div>
+
+    <div class="slide" id="s1">
+      <h2>Basics: BDD</h2>
+      <ul>
+        <li>Write scenarios in Given/When/Then form.</li>
+        <li>Map examples to step implementations to make them executable.</li>
+        <li>Keep stories business-focused and small.</li>
+      </ul>
+      <h3>Benefits</h3>
+      <ul>
+        <li>Shared understanding, living documentation, automated acceptance tests.</li>
+      </ul>
+    </div>
+
+    <div class="slide" id="s2">
+      <h2>Test Types</h2>
+      <ul>
+        <li><strong>Component</strong>: fast, isolated (mock external deps).</li>
+        <li><strong>Integration</strong>: multiple components / DB interactions.</li>
+        <li><strong>Functional / E2E</strong>: full user/business flows.</li>
+        <li><strong>Regression</strong>: broad suites before release.</li>
+        <li><strong>Smoke</strong>: quick critical-path checks.</li>
+      </ul>
+      <p>Tip: Tag stories with <code>@testType</code> to filter CI runs.</p>
+    </div>
+
+    <div class="slide" id="s3">
+      <h2>Decision Guide</h2>
+      <ul>
+        <li>Single class/service → Component</li>
+        <li>Multiple services / DB → Integration</li>
+        <li>Full business flow → Functional/E2E</li>
+      </ul>
+      <pre>mvn test -Dmeta.filter="+testType component"</pre>
+    </div>
+
+    <div class="slide" id="s4">
+      <h2>Story Anatomy (example)</h2>
+      <pre>
+Meta:
+@component rtdx-product-flow
+
+Narrative: rtdx-product-recipe-service-flow
+
+Scenario: (1) opc create smoke
+Meta: @testType functional smoke
+Given initialize the test with &lt;lineItemSku&gt; &lt;lineItemQty&gt; ...
+Examples:
+|testcaseid |country |lineItemSku |...
+      </pre>
+      <p>Angle-bracket placeholders map to Examples columns; values are case-sensitive.</p>
+    </div>
+
+    <div class="slide" id="s5">
+      <h2>Step Definitions</h2>
+      <pre>
+@Given("publish $eventType event to EH using file $xmlfile with $countryCode")
+public void publishEvent(@Named("eventType") String eventType, @Named("xmlfile") String xmlFile, @Named("countryCode") String countryCode) { /* ... */ }
+      </pre>
+      <p>Keep patterns stable; changing annotation text breaks binding.</p>
+    </div>
+
+    <div class="slide" id="s6">
+      <h2>Test Data & Utilities</h2>
+      <ul>
+        <li>ThreadLocal `testData` for per-scenario values.</li>
+        <li>`payloadGeneratorService` to build payloads from templates.</li>
+        <li>`convertPayloadToObject` and `databaseClientService` for validation & cleanup.</li>
+      </ul>
+    </div>
+
+    <div class="slide" id="s7">
+      <h2>Publishing, Ingestion & Validation</h2>
+      <ul>
+        <li>Prefer polling vs fixed sleeps for ingestion completion.</li>
+        <li>Validate by querying DB, deserializing domain models, comparing JSON structures.</li>
+        <li>Assert counts and deep equality; include descriptive messages.</li>
+      </ul>
+    </div>
+
+    <div class="slide" id="s8">
+      <h2>Cleanup Strategy</h2>
+      <ul>
+        <li>Per-scenario cleanup steps to remove inserted rows.</li>
+        <li>Use `@AfterStories` for global teardown (consumer groups, etc.).</li>
+        <li>Make cleanup idempotent.</li>
+      </ul>
+    </div>
+
+    <div class="slide" id="s9">
+      <h2>Performance & Reliability</h2>
+      <ul>
+        <li>Replace Thread.sleep with polling and timeouts.</li>
+        <li>Consider batching inserts.</li>
+        <li>Introduce soft assertions for richer failure reports if needed.</li>
+      </ul>
+    </div>
+
+    <div class="slide" id="s10">
+      <h2>Meta Tags & CI</h2>
+      <p>Use <code>@testType</code> (component/integration/functional/smoke/regression). Optionally add <code>@priority</code> or <code>@duration</code>.</p>
+    </div>
+
+    <div class="slide" id="s11">
+      <h2>Example: BPC Ingestion (excerpt)</h2>
+      <pre>
+Scenario: Check bpc ingestion ...
+Meta: @testType component regression
+Given Dependency publish &lt;dependencyEventType&gt; and publish &lt;eventType&gt; with &lt;countryCodes&gt;
+Then wait for &lt;delay&gt; seconds
+Then validate &lt;eventType&gt; record
+      </pre>
+      <p>Consolidate repeated cleanup into lifecycle hooks where safe.</p>
+    </div>
+
+    <div class="slide" id="s12">
+      <h2>Common Pitfalls</h2>
+      <ul>
+        <li>Changing step annotation text without updating stories.</li>
+        <li>Mismatched example headers vs placeholders.</li>
+        <li>Overuse of sleeps -> slow/flaky tests.</li>
+        <li>Skipping cleanup -> environment contamination.</li>
+      </ul>
+    </div>
+
+    <div class="slide" id="s13">
+      <h2>Actionable Improvements</h2>
+      <ul>
+        <li>Replace sleeps with polling loops and configurable timeouts.</li>
+        <li>Add BeforeScenario isolation/cleanup hooks.</li>
+        <li>Introduce soft assertions and CSV-to-Examples tools.</li>
+      </ul>
+      <div class="note">References: jbehave.org, cucumber.io/docs/bdd</div>
+    </div>
+
+    <div class="footer">docs/jBehave — JBehave Basics</div>
+    <div class="pager" id="pager">1 / 14</div>
+    <div class="controls">
+      <button id="prev">◀ Prev</button>
+      <button id="next">Next ▶</button>
+    </div>
+  </div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll('.slide'))
+    let idx = 0
+    const pager = document.getElementById('pager')
+    function show(i){ slides.forEach(s=>s.classList.remove('active')); slides[i].classList.add('active'); pager.textContent = (i+1) + ' / ' + slides.length }
+    document.getElementById('next').addEventListener('click',()=>{ idx = Math.min(slides.length-1, idx+1); show(idx) })
+    document.getElementById('prev').addEventListener('click',()=>{ idx = Math.max(0, idx-1); show(idx) })
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'ArrowRight' || e.key === 'PageDown') { idx = Math.min(slides.length-1, idx+1); show(idx) }
+      if(e.key === 'ArrowLeft' || e.key === 'PageUp') { idx = Math.max(0, idx-1); show(idx) }
+      if(e.key === 'Home') { idx = 0; show(idx) }
+      if(e.key === 'End') { idx = slides.length-1; show(idx) }
+      if(e.key === 'h' || e.key === 'H'){ alert('Use ← → or PageUp/PageDown to navigate slides. Click controls or use keyboard.'); }
+    })
+    // click anywhere right/left
+    document.querySelector('.deck').addEventListener('click',(e)=>{
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = e.clientX - rect.left
+      if(x > rect.width/2) idx = Math.min(slides.length-1, idx+1); else idx = Math.max(0, idx-1);
+      show(idx)
+    })
+    // initial
+    show(0)
+  </script>
+</body>
+</html>
