@@ -1,0 +1,15 @@
+site_name: "Tech — Docs Website"
+repo_name: "Tech"
+repo_url: "https://github.com/your-org/your-repo"
+site_description: "Generated documentation site from the repository's docs/ folder."
+docs_dir: "docs"
+site_dir: "site"
+theme:
+  name: "mkdocs"
+# If you want a different theme (e.g., material), install it in the workflow and change this value.
+
+# Navigation can be omitted to allow MkDocs to auto-discover pages under `docs/`.
+# nav:
+#   - Home: index.md
+#   - System Design: system_design/cheatsheet_partitioning_sharding_clustering_revision.md
+

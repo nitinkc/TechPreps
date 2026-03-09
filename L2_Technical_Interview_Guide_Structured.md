@@ -148,7 +148,7 @@ A: Need for strict relational integrity across entities.
 A: MySQL B+Tree & composite indexes (leftmost prefix). Mongo indexes on fields (including nested/arrays), plus text/geo/hashed.
 
 **Q: Batch limits (Cosmos/Postgres) & `saveAll`?**  
-A: Cosmos transactional batch limited by partition key & payload (~100 ops/≤2MB). Postgres limited by statement size/memory. Chunk large lists (100���������1000).
+A: Cosmos transactional batch limited by partition key & payload (~100 ops/≤2MB). Postgres limited by statement size/memory. Chunk large lists (recommended batch size: 100–1000 items).
 
 **Q: How indexing impacts performance?**  
 A: Speeds reads (fewer scanned rows), costs extra writes & storage; over-indexing harms write throughput.
