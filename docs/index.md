@@ -1,28 +1,42 @@
-# Tech Docs
+# TechPreps — Interview Preparation
 
-This site renders the repository's `docs/` folder as a documentation website using MkDocs Material.
-
-Use the sidebar or the quick links below to jump into the main areas.
+Welcome to the technical interview preparation documentation site.
 
 ---
 
-## Quick links
+## 🎯 Quick Start
 
-- [System design overview](system_design/system_design.md)
-- [Caching](system_design/caching.md)
-- [Circuit breaker](system_design/circuit_breaker.md)
-- [Database design](system_design/database_design.md)
-- [Error handling & debugging](system_design/error_handling_debugging.md)
-- [Algorithms & coding questions](algo/coding_questions.md)
+- **[Interview Guide](interview_guide.md)** — Structured Q&A for L2 technical interviews (start here!)
+- **[Coding Questions](algo/coding_questions.md)** — Canonical index of all algorithm problems
 
 ---
 
-## Structure
+## 📚 Quick Links
 
-- `docs/algo/` — algorithms and coding question write-ups
-- `docs/system_design/` — system design topics, patterns, and notes
-- `docs/jBehave/` — jBehave reference material
+### System Design
+- [System Design Overview](system_design/system_design.md)
+- [Circuit Breaker](system_design/circuit_breaker.md)
+- [SAGA Pattern](system_design/saga_pattern.md)
+- [Caching Strategies](system_design/caching.md)
+- [Database Design](system_design/database_design.md)
+- [Service Discovery](system_design/service_discovery.md)
+
+### Algorithms
+- [Algorithms & Coding Questions](algo/coding_questions.md)
+
+### Troubleshooting
+- [Error Handling & Debugging](system_design/error_handling_debugging.md)
+- [Performance Optimization](system_design/performance_optimization.md)
 
 ---
 
-*This site is generated from the repository's `docs/` folder.*
+## 📂 Structure
+
+| Directory | Description |
+|-----------|-------------|
+| `algo/` | Algorithm and coding question write-ups |
+| `system_design/` | System design topics, patterns, and notes |
+
+---
+
+*This site is generated from the repository's `docs/` folder using MkDocs Material.*

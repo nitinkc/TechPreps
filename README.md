@@ -1,33 +1,70 @@
-# Tech — Interview Prep Repository
+# TechPreps — Interview Preparation Repository
 
-This repository contains interview prep materials and detailed coding problem write-ups.
+Technical interview preparation: algorithms, system design, and microservices patterns.
 
-Canonical consolidated index for coding problems:
+## 📚 Documentation Site
 
-```bash
-# remove deprecated file and commit
-git add README.md
-git rm L2_Technical_Interview_Guide_CLEAN.md
-git commit -m "chore(docs): add root README pointing to canonical coding index and remove deprecated CLEAN guide"
+**Live Site:** [https://nitinkc.github.io/TechPreps/](https://nitinkc.github.io/TechPreps/)
+
+The docs are rendered using MkDocs Material and hosted on GitHub Pages.
+
+## 🚀 Quick Links
+
+| Topic | Description |
+|-------|-------------|
+| [Interview Guide](https://nitinkc.github.io/TechPreps/interview_guide/) | Structured Q&A for L2 technical interviews |
+| [Coding Questions](https://nitinkc.github.io/TechPreps/algo/coding_questions/) | Canonical index of all coding problems |
+| [System Design](https://nitinkc.github.io/TechPreps/system_design/system_design/) | High-level system design patterns |
+
+## 📂 Repository Structure
+
+```
+src/main/java/com/interview/
+├── algorithms/         # Core algorithm implementations (LRUCache, RateLimiter, etc.)
+└── examples/           # Spring Boot microservice demo
+
+docs/
+├── interview_guide.md  # L2 Technical Interview Q&A
+├── algo/               # Coding problem write-ups
+└── system_design/      # System design topics
 ```
 
-# guide_sections — L2 Technical Interview Guide (split topics)
+## 🔧 Local Development
 
-Files
-- `circuit_breaker.md` — Circuit breaker pattern, states, triggers, and fallbacks.
-- `data_ingestion.md` — Cloud ingestion patterns for AWS & GCP (streaming & batch).
-- `api_performance_microservices.md` — API design, performance, resiliency, and observability.
-- `terraform.md` — Terraform concepts, best practices, and state considerations.
-- `microservices_scaling.md` — Scaling patterns, CQRS, autoscaling, and operational concerns.
-- `service_discovery.md` — Client/server-side discovery patterns and common implementations.
-- `security.md` — AuthN/AuthZ, secrets, transport security, and operational tips.
-- `caching.md` — Cache types, patterns, invalidation strategies, and stampede protection.
-- `saga_pattern.md` — Distributed transactions: choreography vs orchestration and compensations.
-- `database_design.md` — Schema design, indexing, partitioning/sharding, and scaling tips.
-- `system_design.md` — Interview approach: requirements, components, trade-offs, and diagrams.
-- `error_handling_debugging.md` — Observability, tracing, logs, and debugging checklist.
-- `performance_optimization.md` — Query tuning, profiling, caching, and observability.
-- `FAQ.md` — Quick answers about the repo layout and usage.
+### Run Tests
+```bash
+mvn clean test
+mvn -Dtest=LRUCacheTest test   # Run specific test
+```
 
-How to use
-- Open `L2_Technical_Interview_Guide.md` for the main index linking to these files.
+### Serve Docs Locally
+```bash
+source .venv/bin/activate
+pip install -r requirements-docs.txt
+mkdocs serve
+```
+
+Open [http://localhost:8000](http://localhost:8000) to view the docs locally.
+
+## 📖 Topics Covered
+
+### Algorithms
+- LRU Cache, Rate Limiter (token bucket), Banking system (top-K)
+- Graph algorithms, Dynamic programming, Backtracking
+- Linked lists, Trees, Sliding window
+
+### System Design
+- [Circuit Breaker](https://nitinkc.github.io/TechPreps/system_design/circuit_breaker/) — Resilience patterns
+- [SAGA Pattern](https://nitinkc.github.io/TechPreps/system_design/saga_pattern/) — Distributed transactions
+- [Caching](https://nitinkc.github.io/TechPreps/system_design/caching/) — Strategies & invalidation
+- [Database Design](https://nitinkc.github.io/TechPreps/system_design/database_design/) — Partitioning, sharding, indexing
+- [Service Discovery](https://nitinkc.github.io/TechPreps/system_design/service_discovery/) — Patterns & implementations
+- [Messaging](https://nitinkc.github.io/TechPreps/system_design/messaging_kafka_nats_eventhub/) — Kafka, NATS, Event Hub
+
+## 🛠 Tech Stack
+
+- **Java 11** with Spring Boot 2.7.5
+- **Spring Cloud**: Feign clients, Eureka discovery
+- **Database**: H2 (in-memory for tests/demos)
+- **Messaging**: Kafka for event-driven patterns
+- **Docs**: MkDocs Material

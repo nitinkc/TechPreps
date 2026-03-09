@@ -1,4 +1,5 @@
 site_name: "TechPreps — Interview Prep"
+site_url: "https://nitinkc.github.io/TechPreps/"
 repo_name: "TechPreps"
 repo_url: "https://github.com/nitinkc/TechPreps"
 site_description: "Technical interview preparation: algorithms, system design, and microservices patterns."
@@ -44,6 +45,7 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Interview Guide: interview_guide.md
   - Algorithms:
     - Overview: algo/coding_questions.md
     - Shortest Path: algo/01_shortest_path_weighted_graph.md
